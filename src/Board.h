@@ -12,6 +12,9 @@ public:
     int selectedX = -1;
     int selectedY = -1;
     string selectedAvailableMoves = "";
+
+    bool whiteChecked = false;
+    bool blackCheked = false;
     bool calculated = 0;
 
     string DangerousMoves = "";
@@ -896,6 +899,15 @@ public:
         {
             window.draw(calcBtn);
         }
+        sf::Sprite menu;
+        sf::Texture menuTxt;
+        menuTxt.loadFromFile("../res/Buttons/Menu.png");
+        menu.setTexture(menuTxt);
+        menu.setPosition(640, 200);
+        if (!this->finished)
+        {
+            window.draw(menu);
+        }
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -916,6 +928,11 @@ public:
                 }
 
                 cell.setPosition(cx, cy);
+                if ((this->whiteChecked && i == this->whiteKingX && j == this->whiteKingY) || this->blackCheked && i == this->blackKingX && j == this->blackKingY)
+                {
+                    cell.setFillColor(sf::Color(138, 97, 89));
+                }
+
                 if (this->selectedAvailableMoves.find(getCoordinates(i, j)) != string::npos)
                 {
                     if ((i + j) % 2 != 0)
@@ -996,7 +1013,8 @@ public:
                 this->selectedAvailableMoves = "";
                 this->calculated = false;
                 this->DangerousMoves = "";
-
+                this->whiteChecked = this->whiteKingChecked();
+                this->blackCheked = this->blackKingChecked();
                 cout << this->textFacade();
             }
             else
@@ -1018,7 +1036,6 @@ public:
                     this->selectedX = i;
                     this->selectedY = j;
                     this->selectedAvailableMoves = this->properMoves(i, j);
-                    cout << "can go to :" << this->selectedAvailableMoves << std::endl;
                 }
                 else
                 {

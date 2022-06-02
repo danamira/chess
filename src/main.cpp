@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1100, 640), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(1010, 640), "SFML works!");
     window.RenderTarget::clear(sf::Color(43.f, 35.f, 33.f));
 
     sf::Texture texture;

@@ -24,6 +24,6 @@ string standardPosition(string pos)
 
 string defaultSetup()
 {
-    // return "RB NB BB QB KB BB NB RB\nPB PB PB PB PB PB PB PB\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\nPW PW PW PW PW PW PW PW\nRW NW BW QW KW BW NW RW";
-    return "-- -- BW -- KB -- -- RB\n-- -- KW -- PB PB PB --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- QW -- --\n-- -- -- -- PW -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --";
+    return "RB NB BB QB KB BB NB RB\nPB PB PB PB PB PB PB PB\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\nPW PW PW PW PW PW PW PW\nRW NW BW QW KW BW NW RW";
+    // return "-- -- BW -- KB -- -- RB\n-- -- KW -- PB PB PB --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- QW -- --\n-- -- -- -- PW -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --\n-- -- -- -- -- -- -- --";
 }
