@@ -11,6 +11,9 @@ public:
     bool finished = false;
     int selectedX = -1;
     int selectedY = -1;
+    bool whiteWon = false;
+    bool blackWon = false;
+    bool flipped = false;
     string selectedAvailableMoves = "";
 
     bool whiteChecked = false;
@@ -756,23 +759,27 @@ public:
                 {
                     this->addPiece(Piece(pieceType, color == 'W'), 7 - col, 7 - row);
                 }
-                else {
+                else
+                {
                     Piece p;
-                    this->map[7-col][7-row]=p;
+                    this->map[7 - col][7 - row] = p;
                 }
                 col += 1;
             }
             h = "";
         }
-        this->whiteChecked=false;
-        this->blackCheked=false;
-        this->finished=false;
-        this->calculated=false;
-        this->selectedAvailableMoves="";
-        this->DangerousMoves="";
-        this->isWhiteTurn=true;
-        this->selectedX=-1;
-        this->selectedY=-1;
+        this->whiteChecked = false;
+        this->blackCheked = false;
+        this->finished = false;
+        this->calculated = false;
+        this->selectedAvailableMoves = "";
+        this->DangerousMoves = "";
+        this->isWhiteTurn = true;
+        this->selectedX = -1;
+        this->selectedY = -1;
+        this->flipped = false;
+        this->whiteWon = false;
+        this->blackWon = false;
     }
 
     string calculateBlackDefense()
@@ -887,12 +894,12 @@ public:
         }
         turn.setPosition(640, 40);
         calcBtn.setPosition(640, 80);
-        if (this->whiteKingMated())
+        if (this->blackWon)
         {
             turnTxt.loadFromFile("../res/Texts/BWINS.png");
             this->finished = true;
         }
-        else if (this->blackKingMated())
+        else if (this->whiteWon)
         {
             this->finished = true;
             turnTxt.loadFromFile("../res/Texts/WWINS.png");
@@ -920,17 +927,21 @@ public:
         menuTxt.loadFromFile("../res/Buttons/Menu.png");
         menu.setTexture(menuTxt);
         menu.setPosition(640, 200);
-        if (!this->finished)
-        {
-            window.draw(menu);
-        }
+        // if (!this->finished)
+        // {
+        window.draw(menu);
+        // }
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                int cx = 20 + 75 * (i);
-                int cy = 20 + 75 * (7 - j);
+                int cx;
+                int cy;
+
+                cx = 20 + 75 * (i);
+                cy = 20 + 75 * (7 - j);
                 string srcCord = getCoordinates(this->selectedX, this->selectedY);
+                // string srcCord = getCoordinates(this->selectedX, this->selectedY);
                 string desCord = getCoordinates(i, j);
 
                 sf::RectangleShape cell(sf::Vector2f(75.f, 75.f));
@@ -943,7 +954,13 @@ public:
                     cell.setFillColor(sf::Color(173, 163, 151));
                 }
 
+                if (this->flipped)
+                {
+                    // cx = 20 + 75 * (7 - i);
+                    cy = 20 + 75 * j;
+                }
                 cell.setPosition(cx, cy);
+
                 if ((this->whiteChecked && i == this->whiteKingX && j == this->whiteKingY) || this->blackCheked && i == this->blackKingX && j == this->blackKingY)
                 {
                     cell.setFillColor(sf::Color(138, 97, 89));
@@ -980,7 +997,14 @@ public:
                 Piece position = this->getPieceByPosition(i, j);
                 if (position.type != '!')
                 {
-                    piece.setPosition(20 + 75 * i, 20 + 75 * (7 - j));
+                    if (!this->flipped)
+                    {
+                        piece.setPosition(20 + 75 * i, 20 + 75 * (7 - j));
+                    }
+                    else
+                    {
+                        piece.setPosition(20 + 75 * (i), 20 + 75 * (j));
+                    }
                     sf::Texture txt;
                     txt.loadFromFile("../res/Pieces/" + position.alias() + ".png");
                     piece.setTexture(txt);
@@ -992,13 +1016,24 @@ public:
 
     void selectPiece(int mouseX, int mouseY)
     {
-        if (this->finished)
+        if (this->finished || this->flipped)
         {
             return;
         }
-        int i = mouseX / 75;
-        int j = 7 - (mouseY / 75);
+        int i;
+        int j;
 
+        if (this->flipped)
+        {
+
+            i = 7 - (mouseX / 75);
+            j = (mouseY / 75);
+        }
+        else
+        {
+            i = mouseX / 75;
+            j = 7 - (mouseY / 75);
+        }
         cout << i << j << std::endl;
 
         Piece chosen = this->getPieceByPosition(i, j);
@@ -1031,6 +1066,14 @@ public:
                 this->DangerousMoves = "";
                 this->whiteChecked = this->whiteKingChecked();
                 this->blackCheked = this->blackKingChecked();
+                if (this->whiteKingMated())
+                {
+                    this->blackWon = true;
+                }
+                if (this->blackKingMated())
+                {
+                    this->whiteWon=true;
+                }
                 cout << this->textFacade();
             }
             else

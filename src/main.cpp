@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1010, 640), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(1010, 640), "Smart Chess",sf::Style::Titlebar | sf::Style::Close);
     window.RenderTarget::clear(sf::Color(43.f, 35.f, 33.f));
 
     sf::Texture texture;
@@ -64,9 +64,28 @@ int main()
                             chessBoard.calculated = true;
                         }
                     }
-                    if (mouseX > 640 && mouseX < 727 && mouseY > 200 && mouseY < 287)
+                    if (mouseX > 640 && mouseX < 825 && mouseY > 200 && mouseY < 350)
                     {
                         chessBoard.setup();
+                    }
+                    if (mouseX > 640 && mouseX < 825 && mouseY > 350 && mouseY < 500)
+                    {
+                        chessBoard.flipped=!chessBoard.flipped;
+                    }
+                     if (mouseX > 825 && mouseX < 1000 && mouseY > 200 && mouseY <350)
+                    {
+                        if(chessBoard.isWhiteTurn) {
+                            chessBoard.blackWon=true;
+                        }
+                        else {
+                            chessBoard.whiteWon=true;
+                        }
+                        chessBoard.finished=true;
+                    }
+                    if (mouseX > 825 && mouseX <1000 && mouseY > 350 && mouseY < 500)
+                    {
+                        window.close();
+                        break;
                     }
                 }
                 break;
