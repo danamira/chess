@@ -12,6 +12,9 @@ public:
     int selectedX = -1;
     int selectedY = -1;
     string selectedAvailableMoves = "";
+    bool calculateDefenses = 0;
+
+    string DangerousMoves = "";
 
     bool isWhiteTurn = true;
 
@@ -720,8 +723,8 @@ public:
     void setup()
     {
 
-        string map = defaultSetup();
         int row;
+        string map = defaultSetup();
         int col;
         char pieceType;
         char color;
@@ -740,12 +743,115 @@ public:
                 color = h[1];
                 if (pieceType != '-')
                 {
-                    this->addPiece(Piece(pieceType, color == 'W'), col, 7 - row);
+                    this->addPiece(Piece(pieceType, color == 'W'), 7 - col, 7 - row);
                 }
                 col += 1;
             }
             h = "";
         }
+    }
+
+    string calculateBlackDefense()
+    {
+
+        string k;
+        Piece p;
+        string pr;
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                p = this->getPieceByPosition(i, j);
+                if (p.type == '!' || p.isWhite)
+                {
+                    continue;
+                }
+                string targets = this->properMoves(p.x, p.y);
+                string destX;
+                string destY;
+                Board check;
+                string src;
+                for (int t = 0; t < targets.length(); t++)
+                {
+                    if (t % 3 == 0)
+                    {
+                        destX = targets[t];
+                    }
+                    else if (t % 3 == 1)
+                    {
+                        destY = targets[t];
+                        src = to_string(i * 10 + j);
+                        if (i == 0)
+                        {
+                            src = '0' + src;
+                        }
+                        check = this->movePiece(src, destX + destY);
+                        bool IsMatedInTwo;
+                        if (check.blackMatedInOne() || check.blackMatedInTwo())
+                        {
+                            pr += (src) + p.alias() + (destX + destY) + '-';
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+        }
+        return pr;
+    }
+
+    string calculateWhiteDefense()
+    {
+        string k;
+        Piece p;
+        string pr;
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                p = this->getPieceByPosition(i, j);
+                if (p.type == '!' || !p.isWhite)
+                {
+                    continue;
+                }
+                string targets = this->properMoves(p.x, p.y);
+                string destX;
+                string destY;
+                Board check;
+                string src;
+                for (int t = 0; t < targets.length(); t++)
+                {
+                    if (t % 3 == 0)
+                    {
+                        destX = targets[t];
+                    }
+                    else if (t % 3 == 1)
+                    {
+                        destY = targets[t];
+                        src = to_string(i * 10 + j);
+                        if (i == 0)
+                        {
+                            src = '0' + src;
+                        }
+                        check = this->movePiece(src, destX + destY);
+                        bool IsMatedInTwo;
+                        if (check.whiteMatedInOne() || check.whiteMatedInTwo())
+                        {
+                            pr += (src) + p.alias() + (destX + destY) + '-';
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
+        }
+        return pr;
     }
 
     void render(sf::RenderWindow &window)
@@ -754,24 +860,42 @@ public:
         board.setFillColor(sf::Color(173, 163, 151));
         board.setPosition(20, 20);
         window.draw(board);
-        
+
         sf::Sprite turn;
+        sf::Sprite calcBtn;
         sf::Texture turnTxt;
-        if(this->isWhiteTurn) {
+        sf::Texture calcTxt;
+        if (this->isWhiteTurn)
+        {
             turnTxt.loadFromFile("../res/Texts/WTM.png");
         }
-        else {
+        else
+        {
             turnTxt.loadFromFile("../res/Texts/BTM.png");
         }
-        turn.setPosition(640,40);
+        if (this->calculateDefenses)
+        {
+            calcTxt.loadFromFile("../res/Buttons/Calc-on.png");
+        }
+        else
+        {
+            calcTxt.loadFromFile("../res/Buttons/Calc-off.png");
+        }
+        turn.setPosition(640, 40);
+        calcBtn.setPosition(640, 80);
         turn.setTexture(turnTxt);
+        calcBtn.setTexture(calcTxt);
         window.draw(turn);
+        window.draw(calcBtn);
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                int cx = 20 + 75 * i;
+                int cx = 20 + 75 * (i);
                 int cy = 20 + 75 * (7 - j);
+                string srcCord = getCoordinates(this->selectedX, this->selectedY);
+                string desCord = getCoordinates(i, j);
+
                 sf::RectangleShape cell(sf::Vector2f(75.f, 75.f));
                 if ((i + j) % 2 == 1)
                 {
@@ -794,13 +918,22 @@ public:
                         cell.setFillColor(sf::Color(114, 114, 91));
                     }
                 }
+
                 if (i == this->selectedX && j == this->selectedY)
                 {
                     cell.setFillColor(sf::Color(208, 187, 99));
                 }
 
                 window.draw(cell);
-
+                if (this->DangerousMoves.find(srcCord + this->getPieceByPosition(this->selectedX, this->selectedY).alias() + desCord) != string::npos)
+                {
+                    sf::Sprite criticalIcon;
+                    sf::Texture criticalTxt;
+                    criticalTxt.loadFromFile("../res/Icons/Dangerous.png");
+                    criticalIcon.setTexture(criticalTxt);
+                    criticalIcon.setPosition(cx + 3, cy + 3);
+                    window.draw(criticalIcon);
+                }
                 sf::Sprite piece;
                 Piece position = this->getPieceByPosition(i, j);
                 if (position.type != '!')
@@ -841,7 +974,17 @@ public:
                 }
 
                 this->isWhiteTurn = !this->isWhiteTurn;
-
+                if (this->calculateDefenses)
+                {
+                    if (this->isWhiteTurn)
+                    {
+                        this->DangerousMoves = this->calculateWhiteDefense();
+                    }
+                    else
+                    {
+                        this->DangerousMoves = this->calculateBlackDefense();
+                    }
+                }
                 this->selectedX = -1;
                 this->selectedY = -1;
                 this->selectedAvailableMoves = "";

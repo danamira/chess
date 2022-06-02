@@ -41,12 +41,27 @@ int main()
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    int mouseX=event.mouseButton.x;
-                    int mouseY=event.mouseButton.y;
+                    int mouseX = event.mouseButton.x;
+                    int mouseY = event.mouseButton.y;
 
-                    if(mouseX>20 && mouseX<620 && mouseY>20 && mouseY<620)
+                    if (mouseX > 20 && mouseX < 620 && mouseY > 20 && mouseY < 620)
                     {
-                        chessBoard.selectPiece(mouseX-20,mouseY-20);
+                        chessBoard.selectPiece(mouseX - 20, mouseY - 20);
+                    }
+                    if (mouseX > 640 && mouseX < 940 && mouseY > 80 && mouseY < 110)
+                    {
+                        chessBoard.calculateDefenses = !chessBoard.calculateDefenses;
+                        if (chessBoard.DangerousMoves.length() == 0 && chessBoard.calculateDefenses)
+                        {
+                            if (chessBoard.isWhiteTurn)
+                            {
+                                chessBoard.DangerousMoves = chessBoard.calculateWhiteDefense();
+                            }
+                            else
+                            {
+                                chessBoard.DangerousMoves = chessBoard.calculateBlackDefense();
+                            }
+                        }
                     }
                 }
                 break;
