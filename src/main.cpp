@@ -61,8 +61,12 @@ int main()
                             {
                                 chessBoard.DangerousMoves = chessBoard.calculateBlackDefense();
                             }
-                            chessBoard.calculated=true;
+                            chessBoard.calculated = true;
                         }
+                    }
+                    if (mouseX > 640 && mouseX < 727 && mouseY > 200 && mouseY < 287)
+                    {
+                        chessBoard.setup();
                     }
                 }
                 break;

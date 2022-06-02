@@ -728,11 +728,14 @@ public:
         return finalItems;
     }
 
-    void setup()
+    void setup(string map = "default")
     {
 
         int row;
-        string map = defaultSetup();
+        if (map == "default")
+        {
+            map = defaultSetup();
+        }
         int col;
         char pieceType;
         char color;
@@ -753,10 +756,23 @@ public:
                 {
                     this->addPiece(Piece(pieceType, color == 'W'), 7 - col, 7 - row);
                 }
+                else {
+                    Piece p;
+                    this->map[7-col][7-row]=p;
+                }
                 col += 1;
             }
             h = "";
         }
+        this->whiteChecked=false;
+        this->blackCheked=false;
+        this->finished=false;
+        this->calculated=false;
+        this->selectedAvailableMoves="";
+        this->DangerousMoves="";
+        this->isWhiteTurn=true;
+        this->selectedX=-1;
+        this->selectedY=-1;
     }
 
     string calculateBlackDefense()
