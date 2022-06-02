@@ -865,14 +865,7 @@ public:
         sf::Sprite calcBtn;
         sf::Texture turnTxt;
         sf::Texture calcTxt;
-        if (this->isWhiteTurn)
-        {
-            turnTxt.loadFromFile("../res/Texts/WTM.png");
-        }
-        else
-        {
-            turnTxt.loadFromFile("../res/Texts/BTM.png");
-        }
+
         if (this->calculateDefenses)
         {
             calcTxt.loadFromFile("../res/Buttons/Calc-on.png");
@@ -883,6 +876,25 @@ public:
         }
         turn.setPosition(640, 40);
         calcBtn.setPosition(640, 80);
+        if (this->whiteKingMated())
+        {
+            turnTxt.loadFromFile("../res/Texts/BWINS.png");
+        }
+        else if (this->blackKingMated())
+        {
+            turnTxt.loadFromFile("../res/Texts/WWINS.png");
+        }
+        else
+        {
+            if (this->isWhiteTurn)
+            {
+                turnTxt.loadFromFile("../res/Texts/WTM.png");
+            }
+            else
+            {
+                turnTxt.loadFromFile("../res/Texts/BTM.png");
+            }
+        }
         turn.setTexture(turnTxt);
         calcBtn.setTexture(calcTxt);
         window.draw(turn);
@@ -970,6 +982,10 @@ public:
                     for (int j = 0; j < 8; j++)
                     {
                         this->map[i][j] = newBoard.map[i][j];
+                        this->whiteKingX = newBoard.whiteKingX;
+                        this->whiteKingY = newBoard.whiteKingY;
+                        this->blackKingX = newBoard.blackKingX;
+                        this->blackKingY = newBoard.blackKingY;
                     }
                 }
 
