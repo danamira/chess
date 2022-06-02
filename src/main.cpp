@@ -1,198 +1,64 @@
-#include <iostream>
-#include <typeinfo>
-#include <vector>
-#include <algorithm>
 
+#include <SFML/Graphics.hpp>
+#include <iostream>
 using namespace std;
 
-#include "helpers.h"
-#include "board/Piece.h"
-#include "board/Board.h"
+#include <vector>
+#include "Helpers.h"
+#include "Piece.h"
+#include "Board.h"
+#include "Config.h"
 
 int main()
 {
+    sf::RenderWindow window(sf::VideoMode(1100, 640), "SFML works!");
+    window.RenderTarget::clear(sf::Color(43.f, 35.f, 33.f));
 
-    Board dana;
-    string input;
-    cin>>input;
+    sf::Texture texture;
 
+    texture.loadFromFile("back.png");
+    sf::Vector2u size = texture.getSize();
+    texture.setSmooth(true);
 
-    int row;
-    int col;
+    sf::Sprite sprite;
+    sprite.setTexture(texture);
+    sprite.setOrigin(0, 0);
+    Board chessBoard;
+    chessBoard.setup();
+    cout << chessBoard.textFacade();
 
-    char pieceType;
-    char color;
-    string h;
-
-    string line;
-    for (int i = 7; i >= 0; i--)
+    window.setFramerateLimit(30);
+    while (window.isOpen())
     {
-        row = i;
-        col = 0;
- 
-        for (int j = 0; j < 8; j++)
+        sf::Event event;
+        while (window.pollEvent(event))
         {
-
-            h = "";
-            cin >> h;
-            pieceType = h[0];
-            color = h[1];
-            if (pieceType != '-')
+            switch (event.type)
             {
-                dana.addPiece(Piece(pieceType, color == 'W'), col, row);
-            }
-            col += 1;
-        }
-        h = "";
-    }
+            case sf::Event::Closed:
+                window.close();
+                break;
+            case sf::Event::MouseButtonPressed:
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    int mouseX=event.mouseButton.x;
+                    int mouseY=event.mouseButton.y;
 
-
-    string finalResult;
-    vector<string> finalItems;
-    
-    Piece p;
-    if (input == "BD")
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                p = dana.getPieceByPosition(i, j);
-                if (p.type == '!' || p.isWhite)
-                {
-                    continue;
-                }
-                string targets = dana.properMoves(p.x, p.y);
-                string destX;
-                string destY;
-                Board check;
-                string src;
-                string k;
-                string pr;
-                for (int t = 0; t < targets.length(); t++)
-                {
-                    if (t % 3 == 0)
+                    if(mouseX>20 && mouseX<620 && mouseY>20 && mouseY<620)
                     {
-                        destX = targets[t];
-                    }
-                    else if (t % 3 == 1)
-                    {
-                        destY = targets[t];
-                        src = to_string(i * 10 + j);
-                        if (i == 0)
-                        {
-                            src = '0' + src;
-                        }
-                        check = dana.movePiece(src, destX + destY);
-                        bool IsMatedInTwo;
-                        if (check.blackMatedInOne() || check.blackMatedInTwo())
-                        {
-                            k += destX + destY + '-';
-                            pr += standardPosition(src) + p.alias() + standardPosition(destX + destY);
-                        }
-                    }
-                    else
-                    {
-                        continue;
+                        chessBoard.selectPiece(mouseX-20,mouseY-20);
                     }
                 }
-
-                if (k == targets + '-')
-                {
-                    // finalResult += standardPosition(src) + p.alias() + '\n';
-                    finalItems.push_back(standardPosition(src) + p.alias());
-                }
-                else
-                {
-                    if (pr.length() > 0)
-                    {
-                        // finalResult += pr + '\n';
-                        finalItems.push_back(pr);
-                    }
-                }
+                break;
             }
         }
-    }
-    if (input == "WD")
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                p = dana.getPieceByPosition(i, j);
-                if (p.type == '!' || !p.isWhite)
-                {
-                    continue;
-                }
-                string targets = dana.properMoves(p.x, p.y);
-                string destX;
-                string destY;
-                Board check;
-                string src;
-                string k;
-                string pr;
-                for (int t = 0; t < targets.length(); t++)
-                {
-                    if (t % 3 == 0)
-                    {
-                        destX = targets[t];
-                    }
-                    else if (t % 3 == 1)
-                    {
-                        destY = targets[t];
-                        src = to_string(i * 10 + j);
-                        if (i == 0)
-                        {
-                            src = '0' + src;
-                        }
-                        check = dana.movePiece(src, destX + destY);
-                        bool IsMatedInTwo;
-                        if (check.whiteMatedInOne() || check.whiteMatedInTwo())
-                        {
-                            k += destX + destY + '-';
-                            pr += standardPosition(src) + p.alias() + standardPosition(destX + destY);
-                        }
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
 
-                if (k == targets + '-')
-                {
+        window.clear();
+        window.draw(sprite);
 
-                    // finalResult+= standardPosition(src) + p.alias()+'\n';
-                    finalItems.push_back(standardPosition(src) + p.alias());
-                }
-                else
-                {
-                    // finalResult+=pr+'\n';
-                    finalItems.push_back(pr);
-                }
-            }
-        }
-    }
-
-    if (input[1] == 'M')
-    {
-        finalItems = dana.getAttacks(input[0]);
-        
-    }
-
-    
-    
-    std::sort(finalItems.begin(),finalItems.end());
-    
-    if(finalItems.empty()) {
-        cout<<"No Answer!";
-        return 0;
-    }
-    for(int i=0;i<finalItems.size();i++){
-        cout<<finalItems.at(i);
-        if(i!=finalItems.size()-1) {
-            cout<<std::endl;
-        }
+        // cout<<chessBoard.getPieceByPosition(1,0).alias();
+        chessBoard.render(window);
+        window.display();
     }
     return 0;
 }

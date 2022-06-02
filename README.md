@@ -1,1 +1,1 @@
-# chess
+ g++ Main.cpp -I "C:\sfml\include" -L "C:\sfml\lib" -lsfml-graphics -lsfml-window -lsfml-system && ./a

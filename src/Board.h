@@ -9,6 +9,12 @@ public:
     int whiteKingX;
     int whiteKingY;
 
+    int selectedX = -1;
+    int selectedY = -1;
+    string selectedAvailableMoves = "";
+
+    bool isWhiteTurn = true;
+
     Board()
     {
     }
@@ -129,6 +135,9 @@ public:
     {
         Piece p = this->getPieceByPosition(x, y);
         string proper;
+
+        // cout<<"Available moves"<<p.availableMoves(this->map);
+
         string targets = p.availableMoves(this->map);
         string destX;
         string destY;
@@ -287,9 +296,6 @@ public:
                         check = this->movePiece(src, destX + destY);
                         if (!check.blackKingChecked())
                         {
-                            // cout<<std::endl;
-                            // cout<<"HERE IS HOW BLACK KING CAN ESCAPE "<<destX+destY;
-                            // cout<<std::endl;
                             return false;
                         }
                     }
@@ -608,8 +614,6 @@ public:
                     continue;
                 }
                 string targets = this->properMoves(p.x, p.y);
-                
-
 
                 // cout<<std::endl;
 
@@ -617,8 +621,7 @@ public:
                 // cout<<std::endl;
                 // cout<<targets;
                 // cout<<std::endl;
-                
-                
+
                 string destX;
                 string destY;
                 Board check;
@@ -632,11 +635,9 @@ public:
                     else if (t % 3 == 1)
                     {
                         destY = targets[t];
-                        
-                        
+
                         string src = to_string(i * 10 + j);
-                        
-                        
+
                         if (i == 0)
                         {
                             src = '0' + src;
@@ -714,5 +715,171 @@ public:
             }
         }
         return finalItems;
+    }
+
+    void setup()
+    {
+
+        string map = defaultSetup();
+        int row;
+        int col;
+        char pieceType;
+        char color;
+        string h;
+
+        for (int i = 0; i < 8; i++)
+        {
+            row = i;
+            col = 0;
+
+            for (int j = 7; j >= 0; j--)
+            {
+
+                h = map.substr((24 * i) + (3 * j), 2);
+                pieceType = h[0];
+                color = h[1];
+                if (pieceType != '-')
+                {
+                    this->addPiece(Piece(pieceType, color == 'W'), col, 7 - row);
+                }
+                col += 1;
+            }
+            h = "";
+        }
+    }
+
+    void render(sf::RenderWindow &window)
+    {
+        sf::RectangleShape board(sf::Vector2f(600.f, 600.f));
+        board.setFillColor(sf::Color(173, 163, 151));
+        board.setPosition(20, 20);
+        window.draw(board);
+        
+        sf::Sprite turn;
+        sf::Texture turnTxt;
+        if(this->isWhiteTurn) {
+            turnTxt.loadFromFile("../res/Texts/WTM.png");
+        }
+        else {
+            turnTxt.loadFromFile("../res/Texts/BTM.png");
+        }
+        turn.setPosition(640,40);
+        turn.setTexture(turnTxt);
+        window.draw(turn);
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                int cx = 20 + 75 * i;
+                int cy = 20 + 75 * (7 - j);
+                sf::RectangleShape cell(sf::Vector2f(75.f, 75.f));
+                if ((i + j) % 2 == 1)
+                {
+                    cell.setFillColor(sf::Color(147, 139, 127));
+                }
+                else
+                {
+                    cell.setFillColor(sf::Color(173, 163, 151));
+                }
+
+                cell.setPosition(cx, cy);
+                if (this->selectedAvailableMoves.find(getCoordinates(i, j)) != string::npos)
+                {
+                    if ((i + j) % 2 != 0)
+                    {
+                        cell.setFillColor(sf::Color(147, 147, 117));
+                    }
+                    else
+                    {
+                        cell.setFillColor(sf::Color(114, 114, 91));
+                    }
+                }
+                if (i == this->selectedX && j == this->selectedY)
+                {
+                    cell.setFillColor(sf::Color(208, 187, 99));
+                }
+
+                window.draw(cell);
+
+                sf::Sprite piece;
+                Piece position = this->getPieceByPosition(i, j);
+                if (position.type != '!')
+                {
+                    piece.setPosition(20 + 75 * i, 20 + 75 * (7 - j));
+                    sf::Texture txt;
+                    txt.loadFromFile("../res/Pieces/" + position.alias() + ".png");
+                    piece.setTexture(txt);
+                    window.draw(piece);
+                }
+            }
+        }
+    }
+
+    void selectPiece(int mouseX, int mouseY)
+    {
+        int i = mouseX / 75;
+        int j = 7 - (mouseY / 75);
+
+        cout << i << j << std::endl;
+
+        Piece chosen = this->getPieceByPosition(i, j);
+        // something already selected
+        if (this->selectedX != -1)
+        {
+
+            if (this->selectedAvailableMoves.find(getCoordinates(i, j)) != string::npos)
+            {
+                // this->map[i][j] = this->getPieceByPosition(this->selectedX, this->selectedY);
+                // this->map[this->selectedX][this->selectedY] = Piece('!');
+                Board newBoard = this->movePiece(getCoordinates(this->selectedX, this->selectedY), getCoordinates(i, j));
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        this->map[i][j] = newBoard.map[i][j];
+                    }
+                }
+
+                this->isWhiteTurn = !this->isWhiteTurn;
+
+                this->selectedX = -1;
+                this->selectedY = -1;
+                this->selectedAvailableMoves = "";
+                cout << this->textFacade();
+            }
+            else
+            {
+                this->selectedX = -1;
+                this->selectedY = -1;
+                this->selectedAvailableMoves = "";
+            }
+        }
+        else
+        {
+
+            if (chosen.type != '!')
+            {
+                if (chosen.isWhite == this->isWhiteTurn)
+                {
+
+                    this->selectedX = i;
+                    this->selectedY = j;
+                    this->selectedAvailableMoves = this->properMoves(i, j);
+                    cout << "can go to :" << this->selectedAvailableMoves << std::endl;
+                }
+                else
+                {
+                    this->selectedX = -1;
+                    this->selectedY = -1;
+                    this->selectedAvailableMoves = "";
+                }
+            }
+            else
+            {
+                this->selectedX = -1;
+                this->selectedY = -1;
+                this->selectedAvailableMoves = "";
+            }
+        }
     }
 };
