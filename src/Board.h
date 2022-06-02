@@ -731,7 +731,7 @@ public:
         return finalItems;
     }
 
-    void setup(string map = "default")
+    void setup(string map = "default",bool isWhiteTurn=true)
     {
 
         int row;
@@ -774,7 +774,7 @@ public:
         this->calculated = false;
         this->selectedAvailableMoves = "";
         this->DangerousMoves = "";
-        this->isWhiteTurn = true;
+        this->isWhiteTurn = isWhiteTurn;
         this->selectedX = -1;
         this->selectedY = -1;
         this->flipped = false;
@@ -1034,7 +1034,6 @@ public:
             i = mouseX / 75;
             j = 7 - (mouseY / 75);
         }
-        cout << i << j << std::endl;
 
         Piece chosen = this->getPieceByPosition(i, j);
         // something already selected
@@ -1074,7 +1073,7 @@ public:
                 {
                     this->whiteWon=true;
                 }
-                cout << this->textFacade();
+                // cout << this->textFacade();
             }
             else
             {

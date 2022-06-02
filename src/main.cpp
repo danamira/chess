@@ -11,7 +11,40 @@ using namespace std;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1010, 640), "Smart Chess",sf::Style::Titlebar | sf::Style::Close);
+    cout << ">> Start from the beginning or enter a board manually? Choose an option." << std::endl;
+    cout << "-- D | Start with the default board." << std::endl;
+    cout << "-- M | Enter the board manually." << std::endl;
+    cout << " -> ";
+
+    char ask;
+    cin >> ask;
+    string givenBoard;
+    string line;
+    char askTurn;
+    if (ask == 'M' || ask == 'm')
+    {
+        for (int i = 0; i < 8; i++)
+        {
+
+            for (int j = 0; j < 8; j++)
+            {
+                line = "";
+                cin >> line;
+                givenBoard += line;
+                if (j != 7)
+                {
+                    givenBoard += ' ';
+                }
+            }
+            givenBoard += '\n';
+        }
+        cout << ">> Whose turn is it? (Enter `B` for black and `W` for white.)" << std::endl;
+
+        cout << "->";
+        cin >> askTurn;
+    }
+
+    sf::RenderWindow window(sf::VideoMode(1010, 640), "Smart Chess", sf::Style::Titlebar | sf::Style::Close);
     window.RenderTarget::clear(sf::Color(43.f, 35.f, 33.f));
 
     sf::Texture texture;
@@ -24,8 +57,16 @@ int main()
     sprite.setTexture(texture);
     sprite.setOrigin(0, 0);
     Board chessBoard;
-    chessBoard.setup();
-    cout << chessBoard.textFacade();
+
+    if (givenBoard.length() == 0)
+    {
+        chessBoard.setup();
+    }
+    else
+    {
+        chessBoard.setup(givenBoard, askTurn == 'W' || askTurn == 'w');
+    }
+    // cout << chessBoard.textFacade();
 
     window.setFramerateLimit(30);
     while (window.isOpen())
@@ -70,19 +111,21 @@ int main()
                     }
                     if (mouseX > 640 && mouseX < 825 && mouseY > 350 && mouseY < 500)
                     {
-                        chessBoard.flipped=!chessBoard.flipped;
+                        chessBoard.flipped = !chessBoard.flipped;
                     }
-                     if (mouseX > 825 && mouseX < 1000 && mouseY > 200 && mouseY <350)
+                    if (mouseX > 825 && mouseX < 1000 && mouseY > 200 && mouseY < 350)
                     {
-                        if(chessBoard.isWhiteTurn) {
-                            chessBoard.blackWon=true;
+                        if (chessBoard.isWhiteTurn)
+                        {
+                            chessBoard.blackWon = true;
                         }
-                        else {
-                            chessBoard.whiteWon=true;
+                        else
+                        {
+                            chessBoard.whiteWon = true;
                         }
-                        chessBoard.finished=true;
+                        chessBoard.finished = true;
                     }
-                    if (mouseX > 825 && mouseX <1000 && mouseY > 350 && mouseY < 500)
+                    if (mouseX > 825 && mouseX < 1000 && mouseY > 350 && mouseY < 500)
                     {
                         window.close();
                         break;
