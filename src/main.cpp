@@ -50,8 +50,8 @@ int main()
                     }
                     if (mouseX > 640 && mouseX < 940 && mouseY > 80 && mouseY < 110)
                     {
-                        chessBoard.calculateDefenses = !chessBoard.calculateDefenses;
-                        if (chessBoard.DangerousMoves.length() == 0 && chessBoard.calculateDefenses)
+                        // chessBoard.calculateDefenses = !chessBoard.calculateDefenses;
+                        if (chessBoard.DangerousMoves.length() == 0 && chessBoard.PieceSelected())
                         {
                             if (chessBoard.isWhiteTurn)
                             {
@@ -61,6 +61,7 @@ int main()
                             {
                                 chessBoard.DangerousMoves = chessBoard.calculateBlackDefense();
                             }
+                            chessBoard.calculated=true;
                         }
                     }
                 }

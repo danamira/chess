@@ -8,11 +8,11 @@ public:
     int blackKingY;
     int whiteKingX;
     int whiteKingY;
-
+    bool finished = false;
     int selectedX = -1;
     int selectedY = -1;
     string selectedAvailableMoves = "";
-    bool calculateDefenses = 0;
+    bool calculated = 0;
 
     string DangerousMoves = "";
 
@@ -23,6 +23,11 @@ public:
     }
     Board(string x)
     {
+    }
+
+    bool PieceSelected()
+    {
+        return (this->selectedX != -1 && this->selectedY != -1);
     }
 
     Piece getPieceByPosition(int x, int y)
@@ -755,102 +760,82 @@ public:
     {
 
         string k;
-        Piece p;
+        Piece p = this->getPieceByPosition(this->selectedX, this->selectedY);
         string pr;
 
-        for (int i = 0; i < 8; i++)
+        string targets = this->properMoves(p.x, p.y);
+        string destX;
+        string destY;
+        Board check;
+        string src;
+        for (int t = 0; t < targets.length(); t++)
         {
-            for (int j = 0; j < 8; j++)
+            if (t % 3 == 0)
             {
-                p = this->getPieceByPosition(i, j);
-                if (p.type == '!' || p.isWhite)
+                destX = targets[t];
+            }
+            else if (t % 3 == 1)
+            {
+                destY = targets[t];
+                src = to_string(this->selectedX * 10 + this->selectedY);
+                if (this->selectedX == 0)
                 {
-                    continue;
+                    src = '0' + src;
                 }
-                string targets = this->properMoves(p.x, p.y);
-                string destX;
-                string destY;
-                Board check;
-                string src;
-                for (int t = 0; t < targets.length(); t++)
+                check = this->movePiece(src, destX + destY);
+                bool IsMatedInTwo;
+                if (check.blackMatedInOne() || check.blackMatedInTwo())
                 {
-                    if (t % 3 == 0)
-                    {
-                        destX = targets[t];
-                    }
-                    else if (t % 3 == 1)
-                    {
-                        destY = targets[t];
-                        src = to_string(i * 10 + j);
-                        if (i == 0)
-                        {
-                            src = '0' + src;
-                        }
-                        check = this->movePiece(src, destX + destY);
-                        bool IsMatedInTwo;
-                        if (check.blackMatedInOne() || check.blackMatedInTwo())
-                        {
-                            pr += (src) + p.alias() + (destX + destY) + '-';
-                        }
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    pr += (src) + p.alias() + (destX + destY) + '-';
                 }
             }
+            else
+            {
+                // continue;
+            }
         }
+
         return pr;
     }
 
     string calculateWhiteDefense()
     {
         string k;
-        Piece p;
+        Piece p = this->getPieceByPosition(this->selectedX, this->selectedY);
         string pr;
 
-        for (int i = 0; i < 8; i++)
+        string targets = this->properMoves(p.x, p.y);
+        string destX;
+        string destY;
+        Board check;
+        string src;
+        for (int t = 0; t < targets.length(); t++)
         {
-            for (int j = 0; j < 8; j++)
+            if (t % 3 == 0)
             {
-                p = this->getPieceByPosition(i, j);
-                if (p.type == '!' || !p.isWhite)
+                destX = targets[t];
+            }
+            else if (t % 3 == 1)
+            {
+                destY = targets[t];
+                src = to_string(this->selectedX * 10 + this->selectedY);
+                if (this->selectedX == 0)
                 {
-                    continue;
+                    src = '0' + src;
                 }
-                string targets = this->properMoves(p.x, p.y);
-                string destX;
-                string destY;
-                Board check;
-                string src;
-                for (int t = 0; t < targets.length(); t++)
+                check = this->movePiece(src, destX + destY);
+                bool IsMatedInTwo;
+                if (check.whiteMatedInOne() || check.whiteMatedInTwo())
                 {
-                    if (t % 3 == 0)
-                    {
-                        destX = targets[t];
-                    }
-                    else if (t % 3 == 1)
-                    {
-                        destY = targets[t];
-                        src = to_string(i * 10 + j);
-                        if (i == 0)
-                        {
-                            src = '0' + src;
-                        }
-                        check = this->movePiece(src, destX + destY);
-                        bool IsMatedInTwo;
-                        if (check.whiteMatedInOne() || check.whiteMatedInTwo())
-                        {
-                            pr += (src) + p.alias() + (destX + destY) + '-';
-                        }
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    pr += (src) + p.alias() + (destX + destY) + '-';
                 }
             }
+            else
+            {
+                continue;
+            }
         }
+
         return pr;
     }
 
@@ -866,22 +851,31 @@ public:
         sf::Texture turnTxt;
         sf::Texture calcTxt;
 
-        if (this->calculateDefenses)
+        if (this->PieceSelected())
         {
-            calcTxt.loadFromFile("../res/Buttons/Calc-on.png");
+            if (this->calculated)
+            {
+                calcTxt.loadFromFile("../res/Buttons/Analyze-Done.png");
+            }
+            else
+            {
+                calcTxt.loadFromFile("../res/Buttons/Analyze.png");
+            }
         }
         else
         {
-            calcTxt.loadFromFile("../res/Buttons/Calc-off.png");
+            calcTxt.loadFromFile("../res/Buttons/Analyze-Disabled.png");
         }
         turn.setPosition(640, 40);
         calcBtn.setPosition(640, 80);
         if (this->whiteKingMated())
         {
             turnTxt.loadFromFile("../res/Texts/BWINS.png");
+            this->finished = true;
         }
         else if (this->blackKingMated())
         {
+            this->finished = true;
             turnTxt.loadFromFile("../res/Texts/WWINS.png");
         }
         else
@@ -898,7 +892,10 @@ public:
         turn.setTexture(turnTxt);
         calcBtn.setTexture(calcTxt);
         window.draw(turn);
-        window.draw(calcBtn);
+        if (!this->finished)
+        {
+            window.draw(calcBtn);
+        }
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -962,6 +959,10 @@ public:
 
     void selectPiece(int mouseX, int mouseY)
     {
+        if (this->finished)
+        {
+            return;
+        }
         int i = mouseX / 75;
         int j = 7 - (mouseY / 75);
 
@@ -990,20 +991,12 @@ public:
                 }
 
                 this->isWhiteTurn = !this->isWhiteTurn;
-                if (this->calculateDefenses)
-                {
-                    if (this->isWhiteTurn)
-                    {
-                        this->DangerousMoves = this->calculateWhiteDefense();
-                    }
-                    else
-                    {
-                        this->DangerousMoves = this->calculateBlackDefense();
-                    }
-                }
                 this->selectedX = -1;
                 this->selectedY = -1;
                 this->selectedAvailableMoves = "";
+                this->calculated = false;
+                this->DangerousMoves = "";
+
                 cout << this->textFacade();
             }
             else
@@ -1011,6 +1004,7 @@ public:
                 this->selectedX = -1;
                 this->selectedY = -1;
                 this->selectedAvailableMoves = "";
+                this->calculated = false;
             }
         }
         else
@@ -1031,6 +1025,7 @@ public:
                     this->selectedX = -1;
                     this->selectedY = -1;
                     this->selectedAvailableMoves = "";
+                    this->calculated = false;
                 }
             }
             else
@@ -1038,6 +1033,7 @@ public:
                 this->selectedX = -1;
                 this->selectedY = -1;
                 this->selectedAvailableMoves = "";
+                this->calculated = false;
             }
         }
     }
