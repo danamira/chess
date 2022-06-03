@@ -49,7 +49,7 @@ int main()
 
     sf::Texture texture;
 
-    texture.loadFromFile("back.png");
+    texture.loadFromFile("res/BG.png");
     sf::Vector2u size = texture.getSize();
     texture.setSmooth(true);
 
@@ -94,6 +94,8 @@ int main()
                         // chessBoard.calculateDefenses = !chessBoard.calculateDefenses;
                         if (chessBoard.DangerousMoves.length() == 0 && chessBoard.PieceSelected())
                         {
+
+                            cout<<"Analyzing the moves... Please do not close the application. This might take a while."<<std::endl;
                             if (chessBoard.isWhiteTurn)
                             {
                                 chessBoard.DangerousMoves = chessBoard.calculateWhiteDefense();
@@ -129,6 +131,10 @@ int main()
                     {
                         window.close();
                         break;
+                    }
+                    if (mouseX > 670 && mouseX < 950 && mouseY > 560 && mouseY < 610)
+                    {
+
                     }
                 }
                 break;

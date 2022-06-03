@@ -731,7 +731,7 @@ public:
         return finalItems;
     }
 
-    void setup(string map = "default",bool isWhiteTurn=true)
+    void setup(string map = "default", bool isWhiteTurn = true)
     {
 
         int row;
@@ -881,38 +881,38 @@ public:
         {
             if (this->calculated)
             {
-                calcTxt.loadFromFile("../res/Buttons/Analyze-Done.png");
+                calcTxt.loadFromFile("res/Buttons/Analyze-Done.png");
             }
             else
             {
-                calcTxt.loadFromFile("../res/Buttons/Analyze.png");
+                calcTxt.loadFromFile("res/Buttons/Analyze.png");
             }
         }
         else
         {
-            calcTxt.loadFromFile("../res/Buttons/Analyze-Disabled.png");
+            calcTxt.loadFromFile("res/Buttons/Analyze-Disabled.png");
         }
         turn.setPosition(640, 40);
         calcBtn.setPosition(640, 80);
         if (this->blackWon)
         {
-            turnTxt.loadFromFile("../res/Texts/BWINS.png");
+            turnTxt.loadFromFile("res/Texts/BWINS.png");
             this->finished = true;
         }
         else if (this->whiteWon)
         {
             this->finished = true;
-            turnTxt.loadFromFile("../res/Texts/WWINS.png");
+            turnTxt.loadFromFile("res/Texts/WWINS.png");
         }
         else
         {
             if (this->isWhiteTurn)
             {
-                turnTxt.loadFromFile("../res/Texts/WTM.png");
+                turnTxt.loadFromFile("res/Texts/WTM.png");
             }
             else
             {
-                turnTxt.loadFromFile("../res/Texts/BTM.png");
+                turnTxt.loadFromFile("res/Texts/BTM.png");
             }
         }
         turn.setTexture(turnTxt);
@@ -922,9 +922,16 @@ public:
         {
             window.draw(calcBtn);
         }
+        sf::Sprite clpbtn;
+        sf::Texture clpTxt;
+        clpTxt.loadFromFile("res/Buttons/Clipboard.png");
+        clpbtn.setPosition(670, 560);
+        clpbtn.setTexture(clpTxt);
+        // window.draw(clpbtn);
+
         sf::Sprite menu;
         sf::Texture menuTxt;
-        menuTxt.loadFromFile("../res/Buttons/Menu.png");
+        menuTxt.loadFromFile("res/Buttons/Menu.png");
         menu.setTexture(menuTxt);
         menu.setPosition(640, 200);
         // if (!this->finished)
@@ -988,7 +995,7 @@ public:
                 {
                     sf::Sprite criticalIcon;
                     sf::Texture criticalTxt;
-                    criticalTxt.loadFromFile("../res/Icons/Dangerous.png");
+                    criticalTxt.loadFromFile("res/Icons/Dangerous.png");
                     criticalIcon.setTexture(criticalTxt);
                     criticalIcon.setPosition(cx + 3, cy + 3);
                     window.draw(criticalIcon);
@@ -1006,7 +1013,7 @@ public:
                         piece.setPosition(20 + 75 * (i), 20 + 75 * (j));
                     }
                     sf::Texture txt;
-                    txt.loadFromFile("../res/Pieces/" + position.alias() + ".png");
+                    txt.loadFromFile("res/Pieces/" + position.alias() + ".png");
                     piece.setTexture(txt);
                     window.draw(piece);
                 }
@@ -1071,7 +1078,7 @@ public:
                 }
                 if (this->blackKingMated())
                 {
-                    this->whiteWon=true;
+                    this->whiteWon = true;
                 }
                 // cout << this->textFacade();
             }
@@ -1080,6 +1087,7 @@ public:
                 this->selectedX = -1;
                 this->selectedY = -1;
                 this->selectedAvailableMoves = "";
+                this->DangerousMoves = "";
                 this->calculated = false;
             }
         }
@@ -1100,6 +1108,7 @@ public:
                     this->selectedX = -1;
                     this->selectedY = -1;
                     this->selectedAvailableMoves = "";
+                    this->DangerousMoves = "";
                     this->calculated = false;
                 }
             }
@@ -1108,6 +1117,7 @@ public:
                 this->selectedX = -1;
                 this->selectedY = -1;
                 this->selectedAvailableMoves = "";
+                this->DangerousMoves = "";
                 this->calculated = false;
             }
         }
