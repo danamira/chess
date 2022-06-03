@@ -15,5 +15,5 @@ Here is an screenshot from the application:</p>
 	<img src="https://raw.githubusercontent.com/danamira/chess/main/.github/Preview.PNG" alt="Screenshot from the app">
 </p>
 <p>In the above-demonstrated situation, white is possibly in a mate-in-one posiiton. However, the black has analyzed all the moves for the knight located in F8. The program suggests that out of the two possible moves for this piece, one of them enables the white to win the game in one move but one of them is not particularly dangerous. The dangerous move is marked with the alert icon.</p>
-<h2>Runnning the application</h2>
+<h2>Running the application</h2>
 <p>Simply clone this repository, switch directory to the root folder of the project and run <code>g++ src/Main.cpp && ./a</code>. Please note that you must have SFML installed in advance, it can be painlessly installed on most of the GNU/Linux distors by <code>sudo apt install sfml</code>.</p>
