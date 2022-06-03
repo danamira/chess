@@ -1,5 +1,6 @@
 .vscode
 src/a.exe
+a.exe
 src/openal32.dll
 src/sfml-audio-2.dll
 src/sfml-audio-d.dll
